@@ -1,212 +1,306 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" style="margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm Tra Ám Ảnh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Hệ Thống Đang Cập Nhật - TranVy Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
-
+        :root {
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --glow: #3b82f6;
+        }
         body {
-            background-color: #000;
-            color: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100dvh; 
             overflow: hidden;
-            cursor: none; /* Giấu chuột để tăng sự bất an */
+            touch-action: none; 
+            -webkit-font-smoothing: antialiased;
             user-select: none;
+            -webkit-user-select: none;
+            cursor: none;
+            position: fixed;
+            overscroll-behavior-y: contain; 
+        }
+        .glass-card {
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            box-shadow: 0 0 100px -20px rgba(59, 130, 246, 0.3);
+            position: relative;
+            z-index: 100;
+        }
+        .neon-border {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 40px;
+            padding: 2px;
+            background: linear-gradient(var(--angle), transparent, var(--glow), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotate-gradient 2s linear infinite;
+        }
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes rotate-gradient { to { --angle: 360deg; } }
+
+        .glitch-screen {
+            animation: glitch 0.2s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+            20% { transform: translate(-5px, 5px); clip-path: inset(10% 0 30% 0); }
+            40% { transform: translate(5px, -5px); clip-path: inset(40% 0 10% 0); }
+            60% { transform: translate(-5px, 0); clip-path: inset(70% 0 5% 0); }
+            80% { transform: translate(5px, 5px); clip-path: inset(20% 0 50% 0); }
+            100% { transform: translate(0); }
         }
 
-        .horror-font {
-            font-family: 'Creepster', cursive;
-        }
+        .danger-flash { animation: danger-flash 0.1s infinite; }
+        @keyframes danger-flash { 0% { background-color: #000; } 50% { background-color: #500000; } }
 
-        /* Hiệu ứng rung màn hình cực mạnh */
-        @keyframes violent-shake {
-            0% { transform: translate(0,0) scale(1); filter: invert(0); }
-            10% { transform: translate(-10px, -10px) scale(1.1); filter: invert(1); }
-            20% { transform: translate(10px, 5px) scale(1.2); }
-            30% { transform: translate(-5px, 15px) scale(1.1); filter: hue-rotate(90deg); }
-            40% { transform: translate(15px, -5px) scale(1.3); }
-            50% { transform: translate(-15px, -15px) scale(1.2); filter: invert(1); }
-            100% { transform: translate(0,0) scale(1.1); }
-        }
-
-        .jumpscare-active {
-            animation: violent-shake 0.05s infinite;
-        }
-
-        #jumpscare-overlay {
+        #terminal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-size: cover;
-            background-position: center;
-            z-index: 10000;
-            /* Hình ảnh ma quái ám ảnh hơn */
-            background-image: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=2037&auto=format&fit=crop');
-        }
-
-        /* Điểm mục tiêu khó nhìn */
-        #target {
-            width: 3px;
-            height: 3px;
-            background: #0a0a0a;
-            position: absolute;
-            border-radius: 50%;
-            box-shadow: 0 0 5px rgba(255,255,255,0.05);
-        }
-
-        #custom-cursor {
-            width: 20px;
-            height: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        /* Hiệu ứng mờ ảo phía sau */
-        .vignette {
-            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 30%, black 100%);
+            background: rgba(0,0,0,0.95);
+            z-index: 200;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            color: #00ff00;
+            font-size: 10px;
+            overflow: hidden;
             pointer-events: none;
         }
 
-        /* Phần ghi công được làm lớn hơn */
-        .credit {
-            position: fixed;
-            bottom: 20px;
-            right: 25px;
-            font-size: 18px; /* Tăng kích thước chữ */
-            color: #444; /* Màu xám đậm hơn một chút để dễ đọc nhưng vẫn bí ẩn */
-            font-family: 'Creepster', cursive; /* Sử dụng font kinh dị cho tên tác giả */
-            z-index: 60;
-            letter-spacing: 3px;
-            text-shadow: 0 0 5px rgba(0,0,0,0.8);
-            opacity: 0.6;
+        .progress-bar-fill {
+            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #3b82f6, #ef4444, #3b82f6);
+            background-size: 200% 100%;
+            animation: move-bg 0.5s linear infinite;
+        }
+        @keyframes move-bg { to { background-position: 200% 0; } }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            text-align: left;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .info-label { color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        .info-value { color: #ef4444; font-weight: bold; }
+
+        .creator-tag {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen">
+<body class="flex items-center justify-center">
 
-    <div class="vignette"></div>
-    <div id="custom-cursor"></div>
-    <div class="credit">cre: Vytran</div>
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full opacity-60"></canvas>
+    <div id="terminal-overlay"></div>
 
-    <!-- Màn hình bắt đầu mang tính lừa đảo cao -->
-    <div id="setup-screen" class="text-center z-50 p-10 bg-zinc-950 border border-zinc-900 shadow-2xl">
-        <h1 class="text-zinc-500 text-xl tracking-widest mb-6">LABORATORY CALIBRATION v4.02</h1>
-        <p class="text-zinc-600 text-sm mb-8 leading-relaxed">
-            Để bắt đầu bài kiểm tra nhận diện vi điểm,<br>
-            vui lòng bật âm lượng loa lên 80% để nghe tín hiệu phản hồi.<br>
-            Giữ yên tư thế mặt cách màn hình 20cm.
-        </p>
-        <button onclick="initApp()" class="px-10 py-3 border border-zinc-700 text-zinc-500 hover:bg-zinc-900 transition-all uppercase text-xs tracking-widest">Khởi chạy cấu hình</button>
-    </div>
+    <div id="main-ui" class="glass-card w-[94%] max-w-[500px] p-[2px]">
+        <div class="neon-border"></div>
+        <div class="bg-[#050505] rounded-[38px] p-8 md:p-12 relative z-30 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.4)]">
+                    <svg class="h-10 w-10 text-red-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+            </div>
 
-    <!-- Khu vực "thí nghiệm" -->
-    <div id="game-area" class="hidden w-full h-full relative">
-        <div id="target"></div>
-        <div id="status-bar" class="absolute bottom-5 left-5 text-[10px] text-zinc-800 font-mono">
-            EYE-TRACKING: ACTIVE | SIGNAL: WEAK | SENSOR_01: OK
+            <h1 id="main-title" class="text-2xl font-black mb-2 tracking-tighter text-red-500">PHÁT HIỆN XÂM NHẬP</h1>
+            <p id="status-label" class="text-white text-[9px] font-black mb-6 tracking-[0.3em] uppercase opacity-60 italic">ĐANG ĐỌC THÔNG TIN HỆ THỐNG...</p>
+
+            <!-- Bảng thông tin máy -->
+            <div class="info-grid mb-8">
+                <span class="info-label">Thiết bị:</span>
+                <span id="dev-name" class="info-value">Đang quét...</span>
+                
+                <span class="info-label">Trình duyệt:</span>
+                <span id="dev-browser" class="info-value">Đang quét...</span>
+                
+                <span class="info-label">Độ phân giải:</span>
+                <span id="dev-res" class="info-value">Đang quét...</span>
+                
+                <span class="info-label">Địa chỉ IP:</span>
+                <span id="dev-ip" class="info-value">192.168.1.104</span>
+                
+                <span class="info-label">Trạng thái:</span>
+                <span class="info-value text-green-500 animate-pulse">VULNERABLE</span>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden border border-white/10">
+                    <div id="progress-bar" class="progress-bar-fill h-full w-0"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-red-500 font-mono font-bold uppercase tracking-widest">
+                    <span id="task-name">Dumping Data...</span>
+                    <span id="percent-text">0%</span>
+                </div>
+            </div>
+
+            <button id="trap-btn" class="w-full py-5 bg-white text-black font-black rounded-2xl transition-all hover:bg-red-500 hover:text-white active:scale-95 shadow-2xl text-sm uppercase tracking-widest mb-6">
+                XÓA DỮ LIỆU ĐỂ GIẢI PHÓNG
+            </button>
+
+            <!-- Credit Section -->
+            <div class="mb-2">
+                <span class="creator-tag text-[11px] uppercase">cre: TranVy</span>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-white/5">
+                <p id="device-footer" class="text-[8px] text-gray-700 uppercase tracking-[0.4em] font-black italic underline">TRUY CẬP ĐÃ BỊ GHI LẠI VÀO LOG HỆ THỐNG</p>
+            </div>
         </div>
-        <p id="instruction" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] text-zinc-900 transition-opacity duration-1000">Tập trung nhìn vào điểm đen đang di chuyển...</p>
     </div>
 
-    <div id="jumpscare-overlay"></div>
-
-    <!-- Âm thanh thì thầm để dụ người dùng vặn to loa -->
-    <audio id="whisper-audio" loop>
-        <source src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Creepy+Whisper&filename=24/248611-643f8e5e-6e21-49b8-8987-9e6659c2409f.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- Âm thanh thét kinh hoàng -->
-    <audio id="scream-audio">
-        <source src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Scary+Scream&filename=24/246414-72216668-3e44-4841-a185-5b4382585f54.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="alert-sfx" loop><source src="https://www.soundjay.com/buttons/sounds/beep-11.mp3" type="audio/mpeg"></audio>
+    <audio id="static-sfx" loop><source src="https://www.soundjay.com/misc/sounds/tv-static-01.mp3" type="audio/mpeg"></audio>
 
     <script>
-        const cursor = document.getElementById('custom-cursor');
-        const target = document.getElementById('target');
-        const whisper = document.getElementById('whisper-audio');
-        const scream = document.getElementById('scream-audio');
-        const overlay = document.getElementById('jumpscare-overlay');
-        let stage = 0;
+        const btn = document.getElementById('trap-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const percentText = document.getElementById('percent-text');
+        const statusLabel = document.getElementById('status-label');
+        const mainTitle = document.getElementById('main-title');
+        const terminal = document.getElementById('terminal-overlay');
+        const alertSfx = document.getElementById('alert-sfx');
+        const staticSfx = document.getElementById('static-sfx');
 
-        // Theo dõi chuột tùy chỉnh
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX - 10 + 'px';
-            cursor.style.top = e.clientY - 10 + 'px';
-        });
-
-        function initApp() {
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('game-area').style.display = 'block';
+        // 1. NHẬN DIỆN CHI TIẾT
+        function getDetailedInfo() {
+            const ua = navigator.userAgent;
+            let device = "Thiết bị không xác định";
+            let browser = "Trình duyệt ẩn danh";
             
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            }
+            if (/iPhone/i.test(ua)) device = "iPhone";
+            else if (/iPad/i.test(ua)) device = "iPad";
+            else if (/Android/i.test(ua)) device = "Android Smartphone";
+            else if (/Windows/i.test(ua)) device = "Windows PC";
+            else if (/Macintosh/i.test(ua)) device = "Apple Mac";
 
-            // Bắt đầu tiếng thì thầm nhỏ để họ phải tập trung
-            whisper.volume = 0.2;
-            whisper.play().catch(() => {});
+            if (ua.indexOf("Chrome") > -1) browser = "Google Chrome";
+            else if (ua.indexOf("Safari") > -1) browser = "Apple Safari";
+            else if (ua.indexOf("Firefox") > -1) browser = "Mozilla Firefox";
+            else if (ua.indexOf("Edg") > -1) browser = "Microsoft Edge";
 
-            moveTarget();
+            return { device, browser, res: `${window.screen.width}x${window.screen.height}` };
         }
 
-        function moveTarget() {
-            // Điểm đen di chuyển rất chậm và khó thấy
-            const x = Math.random() * (window.innerWidth - 50) + 25;
-            const y = Math.random() * (window.innerHeight - 50) + 25;
-            target.style.left = x + 'px';
-            target.style.top = y + 'px';
+        const info = getDetailedInfo();
+        
+        // Hiển thị thông tin máy lên màn hình
+        setTimeout(() => {
+            document.getElementById('dev-name').innerText = info.device;
+            document.getElementById('dev-browser').innerText = info.browser;
+            document.getElementById('dev-res').innerText = info.res;
+            statusLabel.innerText = `PHÁT HIỆN: ${info.device.toUpperCase()} CÓ LỖ HỔNG`;
+            mainTitle.innerText = `${info.device.toUpperCase()} ĐÃ BỊ KHÓA`;
+        }, 800);
+
+        // 2. CHẶN THOÁT
+        document.addEventListener('touchstart', forceLock, { passive: false });
+        document.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+
+        async function forceLock() {
+            try {
+                if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+                else if (document.documentElement.webkitRequestFullscreen) await document.documentElement.webkitRequestFullscreen();
+            } catch(e) {}
         }
 
-        target.addEventListener('mouseenter', () => {
-            stage++;
-            if (stage < 4) {
-                // Di chuyển điểm đi chỗ khác khi họ sắp chạm vào
-                moveTarget();
-                if(stage === 2) {
-                    document.getElementById('instruction').innerText = "Tốt... Giữ nguyên vị trí đó...";
-                    document.getElementById('instruction').style.color = "#111";
-                }
-            } else {
-                doJumpscare();
+        // 3. TIẾN TRÌNH & TERMINAL
+        let prog = 0;
+        setInterval(() => {
+            if(prog < 100) {
+                prog += Math.random() * 0.2;
+                progressBar.style.width = prog + "%";
+                percentText.innerText = Math.floor(prog) + "%";
+                if(prog > 90) document.body.classList.add('glitch-screen');
             }
-        });
+        }, 120);
 
-        function doJumpscare() {
-            whisper.pause();
-            
-            // Kích hoạt jumpscare
-            overlay.style.display = 'block';
-            document.body.classList.add('jumpscare-active');
-            
-            scream.volume = 1.0;
-            scream.play();
+        const terminalLines = [
+            `TARGETING: ${info.device}...`,
+            `BROWSER EXPLOIT: ${info.browser}...`,
+            "RESOLVING SYSTEM_ROOT...",
+            "ENCRYPTING PHOTO_LIBRARY...",
+            "DELETING CONTACTS_DATABASE...",
+            "FATAL ERROR: KERNEL_HALTED",
+            "RECOVERY DISABLING..."
+        ];
 
-            // Hiệu ứng chớp đỏ
-            let count = 0;
-            const interval = setInterval(() => {
-                document.body.style.backgroundColor = count % 2 === 0 ? '#600' : '#000';
-                count++;
-                if (count > 40) clearInterval(interval);
-            }, 30);
+        function startTerminal() {
+            terminal.style.display = 'block';
+            setInterval(() => {
+                const line = document.createElement('div');
+                line.innerText = `> [!] ${terminalLines[Math.floor(Math.random()*terminalLines.length)]}`;
+                terminal.appendChild(line);
+                if(terminal.childNodes.length > 50) terminal.removeChild(terminal.firstChild);
+                terminal.scrollTop = terminal.scrollHeight;
+            }, 50);
+        }
 
-            // Chặn mọi hành vi thoát trong 5 giây đầu
+        // 4. KÍCH HOẠT BẪY
+        btn.addEventListener('click', () => {
+            alertSfx.play().catch(()=>{});
+            staticSfx.play().catch(()=>{});
+            document.body.classList.add('danger-flash', 'glitch-screen');
+            startTerminal();
+
             setTimeout(() => {
-                window.location.reload();
-            }, 5000);
-        }
+                alert(`[CẢNH BÁO TỐI CAO]\n\nChúng tôi đã truy cập thành công vào ${info.device} của bạn thông qua lỗ hổng trên ${info.browser}.\n\nToàn bộ dữ liệu của bạn đang được xóa sạch.`);
+                while(true) {
+                    alert(`${info.device.toUpperCase()} ĐÃ CHẾT!\n\ncre: TranVy`);
+                }
+            }, 2500);
+        });
 
-        // Vô hiệu hóa chuột phải
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        // Hạt nền
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+
+        let particles = Array(40).fill().map(() => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2 + 2 }));
+        function animate() {
+            ctx.fillStyle = "rgba(0,0,0,0.2)";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#ff0000";
+            particles.forEach(p => {
+                p.y += p.s * 4;
+                if(p.y > canvas.height) p.y = -20;
+                ctx.fillRect(p.x, p.y, 1, 20);
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
